@@ -1,20 +1,62 @@
 pipeline  {
-    agent {
-        label 'docker-agent'
+    agent any
+
+
+    environment {
+        REPO_DIR = '/workspace/curl'
+        REPO_URL = 'https://github.com/curl/curl.git'
     }
+
+
     stages {
-        stage('Clone and Build CURL') {
+        stage('Fetch source from github (WAN)') {
+            agent { label 'master' }
             steps {
-		sh 'pwd'
-                sh 'bash scripts/build_and_test.sh'
+		sh '''
+                    rm -rf ${REPO_DIR}
+                    git clone --depth 1 ${REPO_URL} ${REPO_DIR}
+                '''
             }
          }
-        stage('Archive') {
+
+
+
+        stage('Build in isoloted agent') {
+       	  agent { label 'docker-agent' }
             steps {
-                archiveArtifacts artifacts: 'curl/src/curl', fingerprint: true
+                sh '''
+		    cd ${REPO_DIR}
+                    ./buildconf
+                    ./configure
+                    make -j$(nproc)
+		'''
             }
         }
+    
+
+
+
+	stage('Test in isolated agent') {
+	  agent { label 'docker-agent' }
+	    steps {
+	      sh '''
+                  cd ${REPO_DIR}
+                  make test
+       	       '''
+        }
     }
+     
+
+
+	stage('Archive executable') {
+	  agent { label 'docker-agent' }
+	    steps {
+		archiveArtifacts artifacts: 'workspace/curl.src/curl', fingerprint: true
+	}
+    }
+}
+
+    
 
     post {
         success { 
