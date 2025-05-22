@@ -5,6 +5,7 @@ pipeline  {
     stages {
         stage('Clone and Build CURL') {
             steps {
+		sh 'pwd'
                 sh 'bash scripts/build_and_test.sh'
             }
          }
