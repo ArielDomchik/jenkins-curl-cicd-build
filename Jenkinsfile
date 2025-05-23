@@ -27,7 +27,7 @@ pipeline  {
                 sh '''
 		    cd ${REPO_DIR}
                     ./buildconf
-                    ./configure
+                    ./configure --with-openssl
                     make -j$(nproc)
 		'''
             }
