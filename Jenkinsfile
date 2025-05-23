@@ -21,7 +21,8 @@ pipeline  {
 
 
 
-        stage('Build in isoloted agent') {
+    
+   stage('Build in isoloted agent') {
        	  agent { label 'docker-agent' }
             steps {
                 sh '''
@@ -45,13 +46,18 @@ pipeline  {
        	       '''
         }
     }
+
+
      
 
 
 	stage('Archive executable') {
 	  agent { label 'docker-agent' }
 	    steps {
-		archiveArtifacts artifacts: 'workspace/curl.src/curl', fingerprint: true
+	      sh '''
+            cp ${REPO_DIR}/src/.libs/curl ./curl
+          '''
+	   	  archiveArtifacts artifacts: 'curl', fingerprint: true
 	}
     }
 }
