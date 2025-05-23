@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+    jenkins:
+      image: jenkins/jenkins:lts
+      container_name: jenkins-master
+      ports:
+        - "8080:8080"
+      volumes:
+        - jenkins_home:/var/jenkins_home
+        - ./workspace:/workspace
+        - /var/run/docker.sock:/var/run/docker.sock
+      networks:
+        - wan-net
+        - lan-net
+          
+          
+
+    agent:
+      build: 
+        context: .
+        dockerfile: Dockerfile.agent
+      container_name: jenkins-agent
+      volumes:
+        - ./workspace:/workspace
+      networks:
+       - lan-net
+      sysctls:
+        - net.ipv6.conf.all.disable_ipv6=0
+        - net.ipv6.conf.default.disable_ipv6
+      entrypoint: ["sleep", "infinity"]
+      
+
+volumes:
+  jenkins_home:
+
+networks:
+  wan-net:
+    driver: bridge
+  lan-net:
+    driver: bridge
+    internal: true
