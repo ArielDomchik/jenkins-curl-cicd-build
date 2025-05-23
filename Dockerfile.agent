@@ -1,0 +1,24 @@
+FROM ubuntu:20.04
+ENV DEBIAN_FRONTEND=noninteractive
+
+
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+
+RUN apt update && \
+    apt install -y \ 
+        git curl build-essential python3 python3-pip nghttp2 nghttp2-client nghttp2-server autoconf libtool libpsl-dev zlib1g-dev libnghttp2-dev libidn2-0-dev \
+        libbrotli-dev locales libssh-dev libldap2-dev libcurl4-openssl-dev libssl-dev pkg-config ca-certificates openjdk-17-jdk && \
+    apt clean 
+
+
+RUN locale-gen en_US.UTF-8
+
+# Create jenkins user and home directory
+RUN useradd -m jenkins
+USER jenkins
+WORKDIR /workspace
+ENTRYPOINT ["sleep", "infinity"]
+
