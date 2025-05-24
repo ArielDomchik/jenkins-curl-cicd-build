@@ -186,5 +186,5 @@ docker-compose down -v
 
 ## 📝 License
 
-MIT — feel free to reuse and modify.# Jenkins CI/CD Pipeline for Building cURL
+MIT — feel free to reuse and modify.
 
