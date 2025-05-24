@@ -113,14 +113,16 @@ docker-compose up --build -d
 In a terminal, execute this to connect the `jenkins-agent` container to `jenkins-master`:
 
 ```bash
+- Download the agent.jar file to the workspace
 docker exec -it jenkins-agent nohup curl -sO http://jenkins-master:8080/jnlpJars/agent.jar > /dev/null 2>&1 &
 
-`docker exec -u jenkins jenkins-agent bash -c 'nohup java -jar /``workspace``/agent.jar \`
-  `-url http://jenkins-master:8080/ \`
-  `-secret <YOUR-AGENT-SECRET> \`
-  `-name "docker-agent" \`
-  `-webSocket \`
-  `-workDir "/workspace" > /workspace/agent.log 2>&1 &'`
+- Connect the agent to master
+docker exec -u jenkins jenkins-agent bash -c 'nohup java -jar agent.jar \
+  -url http://jenkins-master:8080/ \
+  -secret <YOUR-AGENT-SECRET> \
+  -name "docker-agent" \
+  -webSocket \
+  -workDir "/workspace" > /workspace/agent.log 2>&1 &'
 ```
 
 > Replace `<your-agent-secret>` with the actual secret key shown in the Jenkins UI for the agent.
