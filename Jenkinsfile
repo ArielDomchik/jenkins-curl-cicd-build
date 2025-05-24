@@ -23,7 +23,7 @@ pipeline {
         sh '''
           cd ${REPO_DIR}
           ./buildconf
-          ./configure --with-openssl --enable-debug
+          ./configure --with-openssl --enable-debug --enable-static --disable-shared
           make -j$(nproc)
         '''
       }
@@ -46,7 +46,7 @@ pipeline {
       steps {
         sh '''
           # Copy and strip the executable
-          cp ${REPO_DIR}/src/.libs/curl ./curl
+          cp ${REPO_DIR}/src/curl ./curl
           strip ./curl
           
           # Create build info
@@ -54,8 +54,7 @@ pipeline {
           echo "Git Commit: $(cd ${REPO_DIR} && git rev-parse HEAD)" >> build-info.txt
           echo "Curl Version:" >> build-info.txt
           
-          # Run curl with proper library path
-          LD_LIBRARY_PATH=${REPO_DIR}/lib/.libs ./curl --version >> build-info.txt || echo "Binary failed to run" >> build-info.txt
+          ./curl --version >> build-info.txt || echo "Binary failed to run" >> build-info.txt
         '''
         archiveArtifacts artifacts: 'curl,build-info.txt', fingerprint: true
       }
